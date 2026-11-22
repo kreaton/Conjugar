@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--
+  The README banner (images/banner.png), 1920x1200. The window shows the app's own markup (a snapshot of
+  /verb/tener) styled by its own stylesheet.
+  Render it with:  powershell -File tools\make-banner.ps1
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Conjugar banner</title>
+<link rel="stylesheet" href="../src/Conjugar/wwwroot/css/app.css" />
+<style>
+    html, body { width: 1920px; height: 1200px; overflow: hidden; }
+    body {
+        margin: 0;
+        background:
+            radial-gradient(1000px 800px at 100% 100%, #7650c055, transparent 70%),
+            radial-gradient(1100px 700px at 10% 0%, #3a2366, transparent 70%),
+            #1a1030;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 110px 0 100px;
+        box-sizing: border-box;
+        color: #f4f1e8;
+    }
+
+    .pitch { max-width: 760px; color: #f4f1e8; }
+    .pitch .brand { display: flex; align-items: center; gap: 30px; }
+    .pitch .brand img { width: 128px; height: 128px; border-radius: 28px; box-shadow: 0 16px 40px #0008; }
+    .pitch .brand h1 { margin: 0; font-family: var(--serif); font-size: 96px; font-weight: 700; letter-spacing: -0.01em; color: #fff; }
+    .tagline { margin: 44px 0 0; font-size: 44px; line-height: 1.25; color: #f4f1e8; }
+    .tagline em { font-style: normal; color: #ff9b8f; }
+
+    .features { margin: 48px 0 0; padding: 0; list-style: none; display: grid; gap: 22px; }
+    .features li { position: relative; padding-left: 36px; font-size: 30px; color: #e6e0f2; }
+    .features li::before {
+        content: ""; position: absolute; left: 0; top: 14px;
+        width: 14px; height: 14px; border-radius: 4px; background: #b9a0e8;
+    }
+
+    .window {
+        flex: none;
+        width: 860px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--bg);
+        box-shadow: 0 40px 120px #000b, 0 0 0 1px #ffffff22;
+        transform: scale(1.12);
+        transform-origin: right center;
+    }
+    .chrome { height: 40px; display: flex; align-items: center; gap: 9px; padding: 0 18px; background: #e9e5dd; }
+    .chrome i { width: 13px; height: 13px; border-radius: 50%; background: #cfc9bd; }
+    .chrome span { margin-left: 18px; flex: 1; height: 24px; border-radius: 12px; background: #f7f4ee; font: 13px var(--font); color: #8a8f8b; line-height: 24px; padding-left: 14px; }
+    .window { color: var(--text); }
+    .window .topbar { position: static; padding: .6rem 16px; }
+    .window .page { padding-top: .2rem; padding-bottom: 1.6rem; }
+    .window .definitions { white-space: pre-line; font-size: .92rem; }
+    .window .cards { grid-template-columns: repeat(2, 1fr); }
+    .window .mood h2 { margin-top: 0; }
+</style>
+</head>
+<body>
+<section class="pitch">
+    <div class="brand">
+        <img src="../src/Conjugar/wwwroot/icons/icon-512.png" alt="" />
+        <h1>Conjugar</h1>
+    </div>
+    <p class="tagline">Every Spanish verb, every tense,<br />with the <em>irregular forms in red</em>.</p>
+    <ul class="features">
+        <li>9,000 verbs from Wiktionary</li>
+        <li>Every mood and tense, with <i>vos</i> forms too</li>
+        <li>Look up any form: <i>tuve</i> finds <i>tener</i></li>
+        <li>A plain-English guide to every tense</li>
+        <li>Nothing to install: it runs in the browser</li>
+    </ul>
+</section>
+
+<div class="window">
+<div class="chrome"><i></i><i></i><i></i><span>kreaton.github.io/Conjugar/verb/tener</span></div>
+<header class="topbar"><a class="brand" href=""><img src="../src/Conjugar/wwwroot/icons/icon-192.png" width="28" height="28" alt="">
+        <span>Conjugar</span></a>
+    <nav class="nav"><a href="" class="nav-link">Tenses</a></nav><div class="search compact"><input type="search" placeholder="Search verb…"></div></header>
+<main class="page"><article class="verb">
+<header class="verb-head"><div class="title-row"><h1 lang="es">tener</h1><span class="ipa">/teˈneɾ/</span></div><div class="badges"><span class="badge">-er · e → ie</span><span class="badge irr">irregular · 55 forms</span></div></header>
+<ol class="definitions"><li>to have; to possess</li><li>to have; to possess; to be (a condition or quality)</li></ol>
+<section class="mood"><h2><a href="">Indicativo</a></h2>
+<div class="cards">
+<div class="card"><h3><a href="">presente</a> <small>present</small></h3>
+<table><tr><th scope="row">yo</th><td lang="es"><span class="irr">tengo</span></td></tr><tr><th scope="row">tú</th><td lang="es"><span class="irr">tienes</span></td></tr><tr><th scope="row">él/ella/usted</th><td lang="es"><span class="irr">tiene</span></td></tr><tr><th scope="row">nosotros</th><td lang="es"><span>tenemos</span></td></tr><tr><th scope="row">vosotros</th><td lang="es"><span>tenéis</span></td></tr><tr><th scope="row">ellos/ellas/ustedes</th><td lang="es"><span class="irr">tienen</span></td></tr></table></div>
+<div class="card compound"><h3><a href="">pretérito perfecto</a> <small>present perfect</small></h3>
+<table><tr><th scope="row">yo</th><td lang="es"><span>he </span><span>tenido</span></td></tr><tr><th scope="row">tú</th><td lang="es"><span>has </span><span>tenido</span></td></tr><tr><th scope="row">él/ella/usted</th><td lang="es"><span>ha </span><span>tenido</span></td></tr><tr><th scope="row">nosotros</th><td lang="es"><span>hemos </span><span>tenido</span></td></tr><tr><th scope="row">vosotros</th><td lang="es"><span>habéis </span><span>tenido</span></td></tr><tr><th scope="row">ellos/ellas/ustedes</th><td lang="es"><span>han </span><span>tenido</span></td></tr></table></div>
+<div class="card"><h3><a href="">pretérito indefinido</a> <small>preterite</small></h3>
+<table><tr><th scope="row">yo</th><td lang="es"><span class="irr">tuve</span></td></tr><tr><th scope="row">tú</th><td lang="es"><span class="irr">tuviste</span></td></tr><tr><th scope="row">él/ella/usted</th><td lang="es"><span class="irr">tuvo</span></td></tr><tr><th scope="row">nosotros</th><td lang="es"><span class="irr">tuvimos</span></td></tr><tr><th scope="row">vosotros</th><td lang="es"><span class="irr">tuvisteis</span></td></tr><tr><th scope="row">ellos/ellas/ustedes</th><td lang="es"><span class="irr">tuvieron</span></td></tr></table></div>
+<div class="card"><h3><a href="">pretérito imperfecto</a> <small>imperfect</small></h3>
+<table><tr><th scope="row">yo</th><td lang="es"><span>tenía</span></td></tr><tr><th scope="row">tú</th><td lang="es"><span>tenías</span></td></tr><tr><th scope="row">él/ella/usted</th><td lang="es"><span>tenía</span></td></tr><tr><th scope="row">nosotros</th><td lang="es"><span>teníamos</span></td></tr><tr><th scope="row">vosotros</th><td lang="es"><span>teníais</span></td></tr><tr><th scope="row">ellos/ellas/ustedes</th><td lang="es"><span>tenían</span></td></tr></table></div>
+</div></section>
+</article></main>
+</div>
+</body>
+</html>

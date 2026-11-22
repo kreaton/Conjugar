@@ -1,0 +1,32 @@
+@* Primary form (irregular parts highlighted) followed by its variants. *@
+@foreach (var p in Primary)
+{
+    if (p.Irregular) { <span class="irr" title="Irregular: differs from the regular pattern">@p.Text</span> }
+    else { <span>@p.Text</span> }
+}
+@if (Primary.Count == 0) { <span class="none">—</span> }
+@foreach (var v in Variants.Where(v => v.Note is null || (v.Regional ? ShowRegional : ShowRare)))
+{
+    <span class="variant" title="@v.Note">
+        <span class="sep">/</span>
+        <span class="@(v.Irregular == true ? "irr" : "")">@v.Value</span>
+        @if (v.Note is not null) { <span class="note">@Abbreviate(v.Note)</span> }
+    </span>
+}
+
+@code {
+    [Parameter, EditorRequired] public List<Piece> Primary { get; set; } = [];
+    [Parameter] public List<VerbForm> Variants { get; set; } = [];
+    [Parameter] public bool ShowRare { get; set; }
+    /// <summary>vos forms (hablás) and forms the source labels with a region.</summary>
+    [Parameter] public bool ShowRegional { get; set; }
+
+    private static string Abbreviate(string note) => note
+        .Replace("archaic", "arch.")
+        .Replace("obsolete", "obs.")
+        .Replace("uncommon", "rare")
+        .Replace("latin-america", "Latin America")
+        .Replace("argentina", "Argentina")
+        .Replace("uruguay", "Uruguay")
+        .Replace("spain", "Spain");
+}

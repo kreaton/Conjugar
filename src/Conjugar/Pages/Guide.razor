@@ -1,0 +1,403 @@
+@page "/guide"
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Spanish tenses explained · Conjugar</PageTitle>
+
+<article class="guide">
+    <header class="guide-head">
+        <h1>Spanish tenses explained</h1>
+        <p class="lede">
+            What each mood and tense is for, how the regular forms are built, and a few examples.
+            Every table on a verb page links here.
+        </p>
+        <nav class="toc" aria-label="Contents">
+            <a href="guide#basics">The basics</a>
+            @foreach (var mood in Moods)
+            {
+                <a href="guide#@mood.Id">@mood.Name</a>
+            }
+            <a href="guide#formas-no-personales">Infinitive, gerund, participle</a>
+            <a href="guide#pronominales">Reflexive verbs</a>
+        </nav>
+    </header>
+
+    <section id="basics" class="guide-section">
+        <h2>The basics</h2>
+        <dl class="facts">
+            <dt>Three conjugations</dt>
+            <dd>
+                Verbs are grouped by the ending of the infinitive: <em lang="es">-ar</em> (<em lang="es">hablar</em>),
+                <em lang="es">-er</em> (<em lang="es">comer</em>) and <em lang="es">-ir</em> (<em lang="es">vivir</em>). Remove the
+                ending to get the stem (<em lang="es">habl-</em>) and add the endings of the tense. <em lang="es">-er</em> and
+                <em lang="es">-ir</em> verbs share most endings.
+            </dd>
+
+            <dt>Six persons, and <span lang="es">usted</span></dt>
+            <dd>
+                <em lang="es">yo</em> (I), <em lang="es">tú</em> (you), <em lang="es">él/ella</em> (he/she), <em lang="es">nosotros/as</em>
+                (we), <em lang="es">vosotros/as</em> (you, plural) and <em lang="es">ellos/ellas</em> (they). The polite
+                <em lang="es">usted</em> and <em lang="es">ustedes</em> take the third-person forms. In Latin America
+                <em lang="es">ustedes</em> is the only plural "you", so the <em lang="es">vosotros</em> forms are used only in Spain.
+                The ending already shows the person, so the pronoun is normally left out: <em lang="es">hablo</em> means "I speak".
+            </dd>
+
+            <dt><span lang="es">Vos</span></dt>
+            <dd>
+                In Argentina, Uruguay, Paraguay and much of Central America, <em lang="es">vos</em> replaces <em lang="es">tú</em>, with
+                its own forms in the present, the present subjunctive and the imperative: <em lang="es">vos hablás, comés, vivís;
+                ¡hablá!</em>. Tick <strong>vos &amp; regional forms</strong> on a verb page to see them.
+            </dd>
+
+            <dt>Simple and compound tenses</dt>
+            <dd>
+                Simple tenses are one word (<em lang="es">hablo, hablaba, hablaré</em>). Compound tenses combine <em lang="es">haber</em>
+                with the past participle (<em lang="es">he hablado</em>). Spanish uses <em lang="es">haber</em> for every verb, and the
+                participle never changes: <em lang="es">ella ha ido, ellas han ido</em>. Every simple tense has a compound partner: the
+                auxiliary takes that simple tense.
+            </dd>
+
+            <dt>Stem-changing verbs</dt>
+            <dd>
+                Many verbs change the stem vowel when it is stressed: <em lang="es">e → ie</em> (<em lang="es">pensar → pienso</em>),
+                <em lang="es">o → ue</em> (<em lang="es">poder → puedo</em>) and, in <em lang="es">-ir</em> verbs, <em lang="es">e → i</em>
+                (<em lang="es">pedir → pido</em>). The <em lang="es">nosotros</em> and <em lang="es">vosotros</em> forms keep the plain
+                stem (<em lang="es">pensamos</em>). The verb page shows the change in the badge: <em lang="es">-ar · e → ie</em>.
+            </dd>
+
+            <dt>Spelling changes that are still regular</dt>
+            <dd>
+                Some consonants change spelling to keep their sound: <em lang="es">c → qu, g → gu, z → c</em> before <em>e</em>
+                (<em lang="es">busqué, pagué, empecé</em>) and <em lang="es">c → z, g → j</em> before <em>a</em> and <em>o</em>
+                (<em lang="es">venzo, cojo</em>). An unstressed <em>i</em> between vowels becomes <em>y</em> (<em lang="es">leer → leyó,
+                leyendo</em>), and some verbs write an accent on a stressed <em>i</em> or <em>u</em> (<em lang="es">enviar → envío,
+                actuar → actúo</em>).
+            </dd>
+
+            <dt>What the red forms mean</dt>
+            <dd>
+                Conjugar builds the regular form for every slot and compares it with the real form. Forms that differ are shown in
+                <span class="irr">red</span>. The spelling changes above don't count; stem changes do, so <em lang="es">pienso</em> is
+                red. The comparison can also catch mistakes in the source data: a verb with no stem change whose forms are mostly red
+                gets a warning.
+            </dd>
+        </dl>
+    </section>
+
+    @foreach (var mood in Moods)
+    {
+        <section id="@mood.Id" class="guide-section">
+            <h2>@mood.Name <small>@mood.English</small></h2>
+            <p class="mood-intro">@((MarkupString)mood.Intro)</p>
+
+            @foreach (var t in mood.Tenses)
+            {
+                <div id="@t.Id" class="tense-guide @(t.Compound ? "compound" : "")">
+                    <h3><span lang="es">@t.Name</span> <small>@t.English</small></h3>
+                    <p><strong>Used for:</strong> @((MarkupString)t.Usage)</p>
+                    <p><strong>Formed:</strong> @((MarkupString)t.Formation)</p>
+                    @if (t.Endings is not null)
+                    {
+                        <table class="endings">
+                            <thead>
+                                <tr><th></th><th lang="es">hablar</th><th lang="es">comer</th><th lang="es">vivir</th></tr>
+                            </thead>
+                            <tbody>
+                                @for (var p = 0; p < t.Endings.Length; p++)
+                                {
+                                    <tr>
+                                        <th scope="row" lang="es">@t.Pronouns[p]</th>
+                                        @foreach (var form in t.Endings[p])
+                                        {
+                                            <td lang="es">@Stem(form)<b>@Ending(form)</b></td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    <ul class="examples">
+                        @foreach (var (es, en) in t.Examples)
+                        {
+                            <li><span lang="es">@es</span> <span class="en">@en</span></li>
+                        }
+                    </ul>
+                    @if (Links.TryGetValue(t.Id, out var verbs))
+                    {
+                        <p class="see">See it in: @foreach (var v in verbs) { <a href="verb/@v" lang="es">@v</a><span class="comma">, </span> }</p>
+                    }
+                </div>
+            }
+        </section>
+    }
+
+    <section id="formas-no-personales" class="guide-section">
+        <h2>Infinitive, gerund and participle <small lang="es">formas no personales</small></h2>
+        <p class="mood-intro">These forms don't change for the person.</p>
+
+        <div id="infinitivo" class="tense-guide">
+            <h3><span lang="es">infinitivo</span> <small>infinitive</small></h3>
+            <p>
+                <strong>Used for:</strong> the dictionary form; after modal verbs (<em lang="es">quiero, puedo, tengo que</em>), after
+                prepositions, as a noun (<em lang="es">fumar es malo</em>), and in the near future <em lang="es">ir a</em> + infinitive
+                (<em lang="es">voy a comer</em>). The <span id="infinitivo-compuesto"><em lang="es">infinitivo compuesto</em></span>
+                (<em lang="es">haber hablado</em>) is something done before.
+            </p>
+            <ul class="examples">
+                <li><span lang="es">Quiero aprender español.</span> <span class="en">I want to learn Spanish.</span></li>
+                <li><span lang="es">Mañana voy a llamar a mi madre.</span> <span class="en">Tomorrow I'm going to call my mother.</span></li>
+                <li><span lang="es">Gracias por haber venido.</span> <span class="en">Thank you for coming.</span></li>
+            </ul>
+        </div>
+
+        <div id="gerundio" class="tense-guide">
+            <h3><span lang="es">gerundio</span> <small>gerund</small></h3>
+            <p>
+                <strong>Used for:</strong> an action in progress with <em lang="es">estar</em> (<em lang="es">estoy leyendo</em> = I am
+                reading), and how or while something happens. Endings: <em lang="es">-ando</em> for <em lang="es">-ar</em> verbs,
+                <em lang="es">-iendo</em> for the others. The <span id="gerundio-compuesto"><em lang="es">gerundio compuesto</em></span>
+                (<em lang="es">habiendo hablado</em>) means "having done".
+            </p>
+            <ul class="examples">
+                <li><span lang="es">Estoy leyendo un libro.</span> <span class="en">I'm reading a book.</span></li>
+                <li><span lang="es">Llegó corriendo.</span> <span class="en">He came running.</span></li>
+                <li><span lang="es">Habiendo terminado el trabajo, se fue a casa.</span> <span class="en">Having finished work, he went home.</span></li>
+            </ul>
+        </div>
+
+        <div id="participio" class="tense-guide">
+            <h3><span lang="es">participio</span> <small>past participle</small></h3>
+            <p>
+                <strong>Used for:</strong> all compound tenses (where it never changes), the passive with <em lang="es">ser</em>, and
+                as an adjective (where it agrees: <em lang="es">una puerta abierta</em>). Regular endings: <em lang="es">-ado</em> and
+                <em lang="es">-ido</em> (<em lang="es">hablado, comido, vivido</em>). Some common verbs have an irregular one:
+                <em lang="es">hecho, dicho, visto, puesto, escrito, abierto, vuelto, muerto, roto</em>.
+            </p>
+            <ul class="examples">
+                <li><span lang="es">La carta fue escrita por Ana.</span> <span class="en">The letter was written by Ana.</span></li>
+                <li><span lang="es">una puerta abierta</span> <span class="en">an open door</span></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="pronominales" class="guide-section">
+        <h2>Reflexive verbs <small lang="es">verbos pronominales</small></h2>
+        <p>
+            Reflexive verbs end in <em lang="es">-se</em> (<em lang="es">lavarse</em> = to wash oneself, <em lang="es">llamarse</em> =
+            to be called). They use the pronouns <em lang="es">me, te, se, nos, os, se</em>. The pronoun goes before a conjugated verb
+            (<em lang="es">me lavo, no te laves</em>) and is attached to the end of the infinitive (<em lang="es">lavarse</em>), the
+            gerund (<em lang="es">lavándose</em>) and the positive imperative (<em lang="es">¡lávate! ¡lavémonos! ¡lavaos!</em>),
+            which then often needs a written accent. <em lang="es">Nosotros</em> drops the final <em>s</em> and
+            <em lang="es">vosotros</em> the final <em>d</em> before the pronoun. Compound tenses use <em lang="es">haber</em> as usual:
+            <em lang="es">me he lavado</em>.
+        </p>
+        <p class="see">See it in: <a href="verb/lavarse" lang="es">lavarse</a>, <a href="verb/llamarse" lang="es">llamarse</a>, <a href="verb/despertarse" lang="es">despertarse</a></p>
+    </section>
+</article>
+
+@code {
+    private sealed record GuideTense(
+        string Id, string Name, string English, bool Compound, string Usage, string Formation,
+        string[] Pronouns, string[][]? Endings, (string Es, string En)[] Examples);
+
+    private sealed record GuideMood(string Id, string Name, string English, string Intro, GuideTense[] Tenses);
+
+    private static readonly string[] Yo = ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos/ellas"];
+    private static readonly string[] Imp = ["(tú)", "(usted)", "(nosotros)", "(vosotros)", "(ustedes)"];
+
+    // "habl|o" = stem + ending; the ending is shown in bold.
+    private static string Stem(string f) => f.Split('|')[0];
+    private static string Ending(string f) => f.Contains('|') ? f.Split('|')[1] : "";
+
+    private static string[][] Rows(string[] ar, string[] er, string[] ir) =>
+        ar.Select((_, i) => new[] { "habl|" + ar[i], "com|" + er[i], "viv|" + ir[i] }).ToArray();
+
+    private static string[][] Whole(string[] ar, string[] er, string[] ir) =>
+        ar.Select((_, i) => new[] { "hablar|" + ar[i], "comer|" + er[i], "vivir|" + ir[i] }).ToArray();
+
+    private const string CompoundNote = "Every compound tense uses the same pattern: <em lang=\"es\">haber</em> in the matching simple tense plus the past participle.";
+
+    private static readonly GuideMood[] Moods =
+    [
+        new("indicativo", "Indicativo", "indicative",
+            "The mood of facts: what happens, happened or will happen. Most of what you say and read is in the indicative.",
+        [
+            new("indicativo-presente", "presente", "present", false,
+                "what is true now, habits and general truths, and often the near future. For an action going on right now, <em lang=\"es\">estar</em> + gerund is common (<em lang=\"es\">estoy comiendo</em>).",
+                "stem + present endings.",
+                Yo, Rows(["o", "as", "a", "amos", "áis", "an"], ["o", "es", "e", "emos", "éis", "en"], ["o", "es", "e", "imos", "ís", "en"]),
+                [("Hablo español.", "I speak Spanish."),
+                 ("Todas las mañanas tomo un café.", "Every morning I have a coffee."),
+                 ("Mañana salgo para Madrid.", "I'm leaving for Madrid tomorrow."),
+                 ("Estudio español desde hace dos años.", "I have been studying Spanish for two years.")]),
+            new("indicativo-preterito-perfecto", "pretérito perfecto", "present perfect", true,
+                "a past action connected to the present: today, this week, ever, never, already. In most of Spain it is also the normal past for things that happened today; in Latin America the <em lang=\"es\">indefinido</em> is often used instead.",
+                $"present of <em lang=\"es\">haber</em> + past participle. {CompoundNote}",
+                Yo, null,
+                [("Hoy he comido paella.", "I've had paella today."),
+                 ("¿Has estado alguna vez en México?", "Have you ever been to Mexico?"),
+                 ("Todavía no hemos terminado.", "We haven't finished yet.")]),
+            new("indicativo-preterito-indefinido", "pretérito indefinido", "preterite", false,
+                "a completed action at a definite time in the past: yesterday, last year, in 1492. It tells what happened; the <em lang=\"es\">imperfecto</em> describes the background. Grammars also call it <em lang=\"es\">pretérito perfecto simple</em>.",
+                "stem + preterite endings. Many common verbs have an irregular stem and unstressed endings (<em lang=\"es\">tener → tuve, tuvo; hacer → hice, hizo; decir → dije</em>), and <em lang=\"es\">ser</em> and <em lang=\"es\">ir</em> share their forms (<em lang=\"es\">fui, fue</em>).",
+                Yo, Rows(["é", "aste", "ó", "amos", "asteis", "aron"], ["í", "iste", "ió", "imos", "isteis", "ieron"], ["í", "iste", "ió", "imos", "isteis", "ieron"]),
+                [("Ayer fuimos a la playa.", "Yesterday we went to the beach."),
+                 ("Colón llegó a América en 1492.", "Columbus reached America in 1492."),
+                 ("¿Qué dijiste?", "What did you say?")]),
+            new("indicativo-preterito-anterior", "pretérito anterior", "past anterior", true,
+                "only in literary writing: something that happened just before another past event, after <em lang=\"es\">cuando, apenas, en cuanto</em>. Speech uses the <em lang=\"es\">indefinido</em> or the <em lang=\"es\">pluscuamperfecto</em>.",
+                "preterite of <em lang=\"es\">haber</em> + past participle.",
+                Yo, null,
+                [("Apenas hubo terminado, se marchó.", "As soon as he had finished, he left.")]),
+            new("indicativo-preterito-imperfecto", "pretérito imperfecto", "imperfect", false,
+                "the past seen from the inside: what used to happen, what was going on, and descriptions of how things were. It sets the scene; the <em lang=\"es\">indefinido</em> tells what happened in it.",
+                "stem + <em lang=\"es\">-aba</em> endings for <em lang=\"es\">-ar</em> verbs, <em lang=\"es\">-ía</em> endings for the others. Only three verbs are irregular: <em lang=\"es\">ser (era), ir (iba), ver (veía)</em>.",
+                Yo, Rows(["aba", "abas", "aba", "ábamos", "abais", "aban"], ["ía", "ías", "ía", "íamos", "íais", "ían"], ["ía", "ías", "ía", "íamos", "íais", "ían"]),
+                [("De niño jugaba al fútbol.", "As a child I used to play football."),
+                 ("Llovía y hacía frío.", "It was raining and it was cold."),
+                 ("Mientras cocinaba, llegó Marcos.", "While I was cooking, Marcos arrived.")]),
+            new("indicativo-pluscuamperfecto", "pluscuamperfecto", "pluperfect", true,
+                "something that had already happened before another past event (English \"had done\").",
+                "imperfect of <em lang=\"es\">haber</em> + past participle.",
+                Yo, null,
+                [("Cuando llegué, el tren ya había salido.", "When I arrived, the train had already left."),
+                 ("Nunca había visto el mar.", "I had never seen the sea.")]),
+            new("indicativo-futuro", "futuro", "future", false,
+                "the future, promises and predictions, and guesses about the present (\"it's probably…\"). In speech <em lang=\"es\">ir a</em> + infinitive is just as common (<em lang=\"es\">voy a salir</em>).",
+                "the whole infinitive + <em lang=\"es\">-é, -ás, -á, -emos, -éis, -án</em>, the same for all three conjugations. Irregular verbs shorten the infinitive (<em lang=\"es\">tendré, saldré, podré, haré, diré</em>).",
+                Yo, Whole(["é", "ás", "á", "emos", "éis", "án"], ["é", "ás", "á", "emos", "éis", "án"], ["é", "ás", "á", "emos", "éis", "án"]),
+                [("Mañana lloverá.", "It will rain tomorrow."),
+                 ("El año que viene iré a España.", "Next year I'll go to Spain."),
+                 ("¿Dónde está Marcos? Estará en casa.", "Where's Marcos? He's probably at home.")]),
+            new("indicativo-futuro-perfecto", "futuro perfecto", "future perfect", true,
+                "something that will be finished before a moment in the future, and guesses about the recent past.",
+                "future of <em lang=\"es\">haber</em> + past participle.",
+                Yo, null,
+                [("Para el lunes habré terminado.", "By Monday I'll have finished."),
+                 ("Habrá perdido el tren.", "He has probably missed the train.")]),
+        ]),
+        new("subjuntivo", "Subjuntivo", "subjunctive",
+            "The mood of the subjective: wishes, requests, feelings, doubt and denial, and things not yet real. It appears after <em lang=\"es\">que</em> when the main clause expresses one of these (<em lang=\"es\">quiero que, espero que, me alegra que, no creo que, es importante que</em>), after <em lang=\"es\">ojalá</em>, and after conjunctions such as <em lang=\"es\">para que, antes de que, aunque</em>, and <em lang=\"es\">cuando</em> about the future.",
+        [
+            new("subjuntivo-presente", "presente", "present", false,
+                "the present or future in a clause that needs the subjunctive. It also gives the polite and negative commands.",
+                "the stem of the <em lang=\"es\">yo</em> form of the present (<em lang=\"es\">tengo → teng-</em>) + the \"opposite\" vowel: <em lang=\"es\">-e</em> endings for <em lang=\"es\">-ar</em> verbs, <em lang=\"es\">-a</em> endings for the others.",
+                Yo, Rows(["e", "es", "e", "emos", "éis", "en"], ["a", "as", "a", "amos", "áis", "an"], ["a", "as", "a", "amos", "áis", "an"]),
+                [("Quiero que vengas.", "I want you to come."),
+                 ("Ojalá haga buen tiempo.", "I hope the weather's good."),
+                 ("Cuando llegues, llámame.", "When you arrive, call me.")]),
+            new("subjuntivo-preterito-perfecto", "pretérito perfecto", "present perfect", true,
+                "a past or completed action in a clause that needs the subjunctive, when the main verb is in the present.",
+                "present subjunctive of <em lang=\"es\">haber</em> + past participle.",
+                Yo, null,
+                [("Me alegro de que hayas venido.", "I'm glad you've come."),
+                 ("No creo que lo haya hecho.", "I don't think he has done it.")]),
+            new("subjuntivo-imperfecto", "pretérito imperfecto (-ra)", "imperfect", false,
+                "the subjunctive after a main verb in the past or the conditional, and in the \"if\" part of hypothetical sentences (<em lang=\"es\">si tuviera…</em>). <em lang=\"es\">Quisiera</em> is also a polite \"I would like\".",
+                "the <em lang=\"es\">ellos</em> form of the preterite without <em lang=\"es\">-ron</em> (<em lang=\"es\">tuvieron → tuvie-</em>) + <em lang=\"es\">-ra, -ras, -ra, -ramos, -rais, -ran</em>, so every irregular preterite carries over.",
+                Yo, Rows(["ara", "aras", "ara", "áramos", "arais", "aran"], ["iera", "ieras", "iera", "iéramos", "ierais", "ieran"], ["iera", "ieras", "iera", "iéramos", "ierais", "ieran"]),
+                [("Si tuviera tiempo, viajaría más.", "If I had time, I would travel more."),
+                 ("Me pidió que lo ayudara.", "He asked me to help him."),
+                 ("Quisiera un café, por favor.", "I would like a coffee, please.")]),
+            new("subjuntivo-pluscuamperfecto", "pluscuamperfecto (-ra)", "pluperfect", true,
+                "an earlier past in a clause that needs the subjunctive, and the \"if\" part of hypotheses about the past.",
+                "imperfect subjunctive of <em lang=\"es\">haber</em> + past participle.",
+                Yo, null,
+                [("Si lo hubiera sabido, habría venido.", "If I had known, I would have come."),
+                 ("Ojalá no hubiera dicho nada.", "I wish I hadn't said anything.")]),
+            new("subjuntivo-imperfecto-se", "pretérito imperfecto (-se)", "imperfect", false,
+                "exactly the same as the <em lang=\"es\">-ra</em> form; the two can be swapped in almost every sentence. The <em lang=\"es\">-se</em> form is more common in Spain and in writing.",
+                "the same stem + <em lang=\"es\">-se, -ses, -se, -semos, -seis, -sen</em>.",
+                Yo, Rows(["ase", "ases", "ase", "ásemos", "aseis", "asen"], ["iese", "ieses", "iese", "iésemos", "ieseis", "iesen"], ["iese", "ieses", "iese", "iésemos", "ieseis", "iesen"]),
+                [("Si tuviese tiempo, viajaría más.", "If I had time, I would travel more.")]),
+            new("subjuntivo-pluscuamperfecto-se", "pluscuamperfecto (-se)", "pluperfect", true,
+                "the same as the <em lang=\"es\">-ra</em> pluperfect.",
+                "<em lang=\"es\">hubiese</em> etc. + past participle.",
+                Yo, null,
+                [("Si lo hubiese sabido, habría venido.", "If I had known, I would have come.")]),
+            new("subjuntivo-futuro", "futuro", "future", false,
+                "practically obsolete: you meet it in legal texts (<em lang=\"es\">el que hiciere…</em>) and fixed sayings. Everywhere else the present subjunctive is used.",
+                "the same stem as the imperfect subjunctive + <em lang=\"es\">-re, -res, -re, -remos, -reis, -ren</em>.",
+                Yo, Rows(["are", "ares", "are", "áremos", "areis", "aren"], ["iere", "ieres", "iere", "iéremos", "iereis", "ieren"], ["iere", "ieres", "iere", "iéremos", "iereis", "ieren"]),
+                [("Adonde fueres, haz lo que vieres.", "When in Rome, do as the Romans do.")]),
+            new("subjuntivo-futuro-perfecto", "futuro perfecto", "future perfect", true,
+                "obsolete outside legal language.",
+                "<em lang=\"es\">hubiere</em> etc. + past participle.",
+                Yo, null,
+                [("Si para entonces no hubiere pagado, …", "If by then he has not paid, … (legal)")]),
+        ]),
+        new("condicional", "Condicional", "conditional",
+            "The mood of \"would\": polite requests, wishes, advice, guesses about the past, and the consequence in hypothetical sentences. Spanish grammars count it as a tense of the indicative.",
+        [
+            new("condicional-simple", "condicional simple", "conditional", false,
+                "polite requests and wishes, advice, what would happen if a condition were true, and guesses about the past (<em lang=\"es\">serían las diez</em> = it must have been about ten). The condition itself takes the imperfect subjunctive: <em lang=\"es\">si tuviera tiempo, viajaría</em>.",
+                "the whole infinitive + <em lang=\"es\">-ía</em> endings, with the same irregular stems as the future (<em lang=\"es\">tendría, saldría, haría</em>).",
+                Yo, Whole(["ía", "ías", "ía", "íamos", "íais", "ían"], ["ía", "ías", "ía", "íamos", "íais", "ían"], ["ía", "ías", "ía", "íamos", "íais", "ían"]),
+                [("Me gustaría un café, por favor.", "I would like a coffee, please."),
+                 ("¿Podrías ayudarme?", "Could you help me?"),
+                 ("Yo que tú, no lo haría.", "If I were you, I wouldn't do it.")]),
+            new("condicional-compuesto", "condicional compuesto", "conditional perfect", true,
+                "what would have happened, regrets and missed chances.",
+                "conditional of <em lang=\"es\">haber</em> + past participle.",
+                Yo, null,
+                [("Habría venido con mucho gusto.", "I would gladly have come."),
+                 ("Deberías habérmelo dicho.", "You should have told me.")]),
+        ]),
+        new("imperativo", "Imperativo", "imperative",
+            "The mood of commands, instructions and invitations.",
+        [
+            new("imperativo-afirmativo", "afirmativo", "affirmative", false,
+                "telling someone to do something. Only the <em lang=\"es\">tú</em> and <em lang=\"es\">vosotros</em> forms are really imperatives; <em lang=\"es\">usted, nosotros</em> and <em lang=\"es\">ustedes</em> borrow from the present subjunctive. Pronouns are attached to the end (<em lang=\"es\">dímelo, siéntese</em>).",
+                "<em lang=\"es\">tú</em>: like the <em lang=\"es\">él</em> form of the present (<em lang=\"es\">habla</em>); eight common verbs have a short form (<em lang=\"es\">di, haz, ve, pon, sal, sé, ten, ven</em>). <em lang=\"es\">Vosotros</em>: the infinitive with <em>d</em> for <em>r</em> (<em lang=\"es\">hablad</em>).",
+                Imp, Rows(["a", "e", "emos", "ad", "en"], ["e", "a", "amos", "ed", "an"], ["e", "a", "amos", "id", "an"]),
+                [("¡Habla más despacio, por favor!", "Speak more slowly, please!"),
+                 ("Venid aquí.", "Come here. (to several people, Spain)"),
+                 ("Pase usted.", "Come in. (formal)"),
+                 ("¡Vamos!", "Let's go!")]),
+            new("imperativo-negativo", "negativo", "negative", false,
+                "telling someone not to do something. Every person uses <em lang=\"es\">no</em> + the present subjunctive, and pronouns come before the verb (<em lang=\"es\">no me lo digas</em>).",
+                "<em lang=\"es\">no</em> + present subjunctive.",
+                Imp, Rows(["es", "e", "emos", "éis", "en"], ["as", "a", "amos", "áis", "an"], ["as", "a", "amos", "áis", "an"]),
+                [("¡No toques!", "Don't touch!"),
+                 ("No se preocupe.", "Don't worry. (formal)"),
+                 ("No me lo digas.", "Don't tell me.")]),
+        ]),
+    ];
+
+    private static readonly Dictionary<string, string[]> Links = new()
+    {
+        ["indicativo-presente"] = ["hablar", "tener", "ser"],
+        ["indicativo-preterito-perfecto"] = ["comer", "hacer", "ver"],
+        ["indicativo-preterito-indefinido"] = ["ir", "tener", "decir"],
+        ["indicativo-preterito-imperfecto"] = ["ser", "ir", "ver"],
+        ["indicativo-futuro"] = ["tener", "salir", "hacer"],
+        ["subjuntivo-presente"] = ["ser", "estar", "ir"],
+        ["subjuntivo-imperfecto"] = ["tener", "querer", "ser"],
+        ["condicional-simple"] = ["poder", "querer"],
+        ["imperativo-afirmativo"] = ["decir", "hacer", "lavarse"],
+        ["imperativo-negativo"] = ["tocar", "preocuparse"],
+    };
+
+    // Blazor doesn't scroll to a #fragment when navigating, so do it on arrival and on in-page links.
+    protected override void OnInitialized() => Nav.LocationChanged += OnLocationChanged;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await ScrollToFragment(Nav.Uri);
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e) => await ScrollToFragment(e.Location);
+
+    private async Task ScrollToFragment(string uri)
+    {
+        var fragment = new Uri(uri).Fragment.TrimStart('#');
+        try
+        {
+            if (fragment.Length > 0) await JS.InvokeVoidAsync("conjugar.scrollToId", fragment);
+        }
+        catch (JSException) { }
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+}

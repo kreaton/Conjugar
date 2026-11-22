@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Conjugar",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "src/Conjugar", "--launch-profile", "http", "--no-launch-browser"],
+      "port": 5044
+    }
+  ]
+}

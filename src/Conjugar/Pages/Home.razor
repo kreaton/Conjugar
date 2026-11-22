@@ -1,0 +1,52 @@
+@page "/"
+@inject VerbDatabase Db
+@inject NavigationManager Nav
+
+<PageTitle>Conjugar · Spanish verb conjugations</PageTitle>
+
+<section class="hero">
+    <h1>Spanish verb conjugations</h1>
+    <p class="lede">
+        @Db.VerbCount.ToString("N0") verbs with every simple and compound tense, and irregular forms highlighted.
+        Search by infinitive, or by any form, like <em lang="es">tengo</em>, <em lang="es">fui</em> or <em lang="es">quepa</em>.
+    </p>
+    <SearchBox />
+    <div class="hero-links">
+        <button class="link-button" @onclick="Random">Random verb →</button>
+        <a href="guide">What do all the tenses mean? →</a>
+    </div>
+</section>
+
+<section class="quick">
+    <h2>Common verbs</h2>
+    <div class="chips" lang="es">
+        @foreach (var v in Common)
+        {
+            <a class="chip" href="verb/@v">@v</a>
+        }
+    </div>
+    <h2>One of each pattern</h2>
+    <div class="chips">
+        <a class="chip" href="verb/hablar"><span lang="es">hablar</span> <small>-ar</small></a>
+        <a class="chip" href="verb/comer"><span lang="es">comer</span> <small>-er</small></a>
+        <a class="chip" href="verb/vivir"><span lang="es">vivir</span> <small>-ir</small></a>
+        <a class="chip" href="verb/pensar"><span lang="es">pensar</span> <small>e → ie</small></a>
+        <a class="chip" href="verb/poder"><span lang="es">poder</span> <small>o → ue</small></a>
+        <a class="chip" href="verb/pedir"><span lang="es">pedir</span> <small>e → i</small></a>
+        <a class="chip" href="verb/buscar"><span lang="es">buscar</span> <small>c → qu</small></a>
+        <a class="chip" href="verb/lavarse"><span lang="es">lavarse</span> <small>reflexive</small></a>
+    </div>
+</section>
+
+@code {
+    private static readonly string[] Common =
+    [
+        "ser", "estar", "haber", "tener", "hacer", "ir", "poder", "decir", "dar", "ver",
+        "saber", "querer", "llegar", "pasar", "deber", "poner", "salir", "venir", "conocer", "pedir",
+    ];
+
+    private void Random()
+    {
+        if (Db.RandomInfinitive() is { } v) Nav.NavigateTo("verb/" + Uri.EscapeDataString(v));
+    }
+}
